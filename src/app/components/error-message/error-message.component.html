@@ -1,0 +1,3 @@
+<p class="error-message" *ngFor="let data of arr">
+  <span *ngIf="errorField.errors[data]">{{ errorMessage[data] }}</span>
+</p>

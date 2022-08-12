@@ -1,0 +1,59 @@
+<form
+  nz-form
+  [formGroup]="validateForm"
+  class="login-form"
+  (ngSubmit)="submitForm()"
+>
+  <nz-form-item>
+    <nz-form-control>
+      <nz-input-group nzPrefixIcon="user">
+        <input
+          type="text"
+          nz-input
+          formControlName="email"
+          placeholder="Email"
+        />
+      </nz-input-group>
+      <span
+        *ngIf="f['email'].errors && (f['email'].dirty || f['email'].touched)"
+      >
+        <app-error-message
+          [f]="f"
+          [arr]="['email', 'required']"
+          [field]="email"
+        ></app-error-message>
+      </span>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control nzErrorTip="Please input your Password!">
+      <nz-input-group nzPrefixIcon="lock">
+        <input
+          type="password"
+          nz-input
+          formControlName="password"
+          placeholder="Password"
+        />
+      </nz-input-group>
+      <span
+        *ngIf="
+          f['password'].errors && (f['password'].dirty || f['password'].touched)
+        "
+      >
+        <app-error-message
+          [f]="f"
+          [arr]="['required']"
+          [field]="password"
+        ></app-error-message>
+      </span>
+    </nz-form-control>
+  </nz-form-item>
+
+  <button
+    nz-button
+    class="login-form-button login-form-margin"
+    [nzType]="'primary'"
+  >
+    Log in
+  </button>
+</form>
