@@ -18,7 +18,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { AboutComponent } from './components/about/about.component';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
-
+import { NgChartsModule } from 'ng2-charts';
 
 registerLocaleData(en);
 
@@ -28,7 +28,7 @@ registerLocaleData(en);
     LoginComponent,
     PostComponent,
     AboutComponent,
-    ErrorMessageComponent
+    ErrorMessageComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,9 +41,10 @@ registerLocaleData(en);
     NzFormModule,
     ReactiveFormsModule,
     NzInputModule,
-    NzSelectModule
+    NzSelectModule,
+    NgChartsModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
