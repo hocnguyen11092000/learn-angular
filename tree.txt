@@ -1,0 +1,391 @@
+import { Component, IterableDiffers, OnInit } from '@angular/core';
+
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { SelectionModel } from '@angular/cdk/collections';
+import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
+import { NzFormatEmitEvent, NzTreeNode, NzTreeNodeOptions } from 'ng-zorro-antd/tree';
+
+// interface TreeNode {
+//   name: string;
+//   disabled?: boolean;
+//   children?: TreeNode[];
+// }
+// interface FlatNode {
+//   expandable: boolean;
+//   name: string;
+//   level: number;
+//   disabled: boolean;
+// }
+
+
+// const TREE_DATA: TreeNode[] = [
+
+// ];
+
+
+@Component({
+  selector: 'app-group',
+  templateUrl: './group.component.html',
+  styleUrls: ['./group.component.css']
+})
+export class GroupComponent {
+  selectedKey: string = ''
+  checkedKeys: Array<string> = []
+  expandKey: string | undefined = ''
+  nodes_expand = [
+    { checked: false, title: 'root', key: 'root', parentCode: null, code: 'root' },
+  ];
+
+  childrenNode = [
+    { checked: false, title: 'User', key: 'User', parentCode: 'root', code: 'User' },
+    { checked: false, title: 'Member', key: 'Member', parentCode: 'User', code: 'Member' },
+    { checked: false, title: 'Operation', key: 'Operation', parentCode: 'User', code: 'Operation' },
+    { title: 'Get list member data', key: 'Get list member data', parentCode: 'View member', code: 'Get list member data', isLeaf: true, disableCheckbox: true },
+    { title: 'Get group member data', key: 'Get group member data', parentCode: 'View member', code: 'Get group member data', isLeaf: true, disableCheckbox: true },
+    { title: 'Delete member', key: 'Delete member', parentCode: 'Member', code: 'Delete member', isLeaf: true, disableCheckbox: true },
+    { title: 'Create member', key: 'Create member', parentCode: 'Member', code: 'Create member', isLeaf: true, disableCheckbox: true },
+    { checked: false, title: 'View member', key: 'View member', parentCode: 'Member', code: 'View member' },
+    { checked: false, title: 'View oparation', key: 'View oparation', parentCode: 'Operation', code: 'View oparation' },
+    { checked: false, title: 'Delete oparation', key: 'Delete oparation', parentCode: 'Operation', code: 'Delete oparation', isLeaf: true, disableCheckbox: true },
+    { checked: false, title: 'Create oparation', key: 'Create oparation', parentCode: 'Operation', code: 'Create oparation', isLeaf: true, disableCheckbox: true },
+    { title: 'Get list oparation data', key: 'Get list oparation data', parentCode: 'View oparation', code: 'Get list oparation data', isLeaf: true, disableCheckbox: true },
+    { title: 'Get group oparation data', key: 'Get group oparation data', parentCode: 'View oparation', code: 'Get group oparation data', isLeaf: true, disableCheckbox: true },
+    { checked: false, title: 'Dashboard', key: 'Dashboard', parentCode: 'root', code: 'Dashboard' },
+    { title: 'Dashboard 001', key: 'Dashboard 001', parentCode: 'Dashboard', code: 'Dashboard 001', isLeaf: true, disableCheckbox: true },
+    { title: 'Dashboard 002', key: 'Dashboard 002', parentCode: 'Dashboard', code: 'Dashboard 002', isLeaf: true, disableCheckbox: true },
+    { title: 'Dashboard 003', key: 'Dashboard 003', parentCode: 'Dashboard', code: 'Dashboard 003', isLeaf: true, disableCheckbox: true },
+  ]
+
+  //error at children
+  checkChild(children: any, node: any) {
+    children.forEach((child: any) => {
+      child.checked = node.origin.checked
+
+      if (child.children) {
+        this.checkChild(child.children, node)
+      }
+    })
+  }
+
+  log(value: string[], node: NzTreeNode): void {
+    node.origin.checked = !node.origin.checked
+
+    if (value[0]) {
+      this.selectedKey = value[0]
+    }
+
+    if (node.children.length > 0) {
+      const children = [...this.childrenNode, ...this.nodes_expand].filter(item => item.parentCode === this.selectedKey)
+
+      if (children.length > 0) {
+        this.checkChild(children, node)
+      }
+    }
+
+    this.checkParent(node)
+
+
+  }
+
+  checkParent(node: NzTreeNode) {
+    let checked = node.parentNode?.children.filter(item => !item.isLeaf).every(child => child.origin.checked) as boolean
+    let parentNode = [...this.childrenNode, ...this.nodes_expand].find(item => item.key === node?.parentNode?.key)
+
+    if (parentNode) {
+      parentNode.checked = checked
+
+      if (node.parentNode) {
+        this.checkParent(node.parentNode)
+      }
+    }
+  }
+
+  nzEvent(event: NzFormatEmitEvent): void {
+
+    // load child async
+    if (event.eventName === 'expand') {
+
+      const node = event.node;
+      this.expandKey = node?.key
+
+      if (node?.getChildren().length === 0 && node?.isExpanded) {
+
+        this.loadNode().then(data => {
+          node.addChildren(data);
+        });
+      }
+    }
+  }
+
+
+  loadNode(): Promise<NzTreeNodeOptions[]> {
+    return new Promise(resolve => {
+      const children = this.childrenNode.filter(x => x.parentCode === this.expandKey)
+
+      setTimeout(
+        () =>
+          resolve(children),
+        500
+      );
+    });
+  }
+  //   defaultCheckedKeys = ['0-0-0'];
+  //   defaultSelectedKeys = ['0-0-0'];
+  //   defaultExpandedKeys = ['0-0', '0-0-0', '0-0-1'];
+
+  //   nodes = [
+  //     {
+  //       title: 'Root',
+  //       key: 'root',
+  //       expanded: true,
+  //       children: [
+  //       {
+  //         title: 'User',
+  //         key: '0-0',
+  //         expanded: true,
+  //         children: [
+  //           {
+  //             title: 'Member',
+  //             key: '0-0-0',
+  //             children: [
+  //               { title: 'View Member', key: '0-0-0-0',
+  //               children: [ {
+  //                 title: 'Get list member data', key: '0-0-0-0-0', isLeaf: true,
+  //                 checkable: false,
+  //               },{
+  //                 title: 'Get group member data', key: '0-0-0-0-1', isLeaf: true,
+  //         checkable: false
+  //               }
+  //               ]
+  //             },
+  //               { title: 'Delete Member', key: '0-0-0-1', isLeaf: true },
+  //               { title: 'Create member', key: '0-0-0-2', isLeaf: true }
+  //             ]
+  //           },
+  //           {
+  //             title: 'Operation',
+  //             key: '0-0-0',
+  //             children: [
+  //               { title: 'View Operation', key: '0-0-1-0',
+  //               children: [ {
+  //                 title: 'Get list Operation data', key: '0-0-1-0-0', isLeaf: true,
+  //                 checkable: false,
+  //               },{
+  //                 title: 'Get group Operation data', key: '0-0-1-0-0', isLeaf: true,
+  //         checkable: false
+  //               }
+  //               ]
+  //             },
+  //               { title: 'Delete Operation', key: '0-0-1-1', isLeaf: true },
+  //               { title: 'Create Operation', key: '0-0-1-2', isLeaf: true }
+  //             ]
+  //           }
+  //         ]
+  //       },
+  //       {
+  //         title: 'Dashboard',
+  //         key: '0-1',
+  //         children: [
+  //           { title: 'Dashboard 001', key: '0-1-0-0', isLeaf: true },
+  //           { title: 'Dashboard 002', key: '0-1-0-1', isLeaf: true },
+  //           { title: 'Dashboard 003', key: '0-1-0-2', isLeaf: true }
+  //         ]
+  //       }
+  //     ]
+  //     }];
+
+
+  //   nzEvent(event: any): void {
+  //     console.log(event);
+  //   }
+
+  // }
+
+  // export class NzDemoTreeViewCheckboxComponent {
+  //   private transformer = (node: TreeNode, level: number): FlatNode => {
+  //     const existingNode = this.nestedNodeMap.get(node);
+  //     const flatNode =
+  //       existingNode && existingNode.name === node.name
+  //         ? existingNode
+  //         : {
+  //             expandable: !!node.children && node.children.length > 0,
+  //             name: node.name,
+  //             level,
+  //             disabled: !!node.disabled
+  //           };
+  //     this.flatNodeMap.set(flatNode, node);
+  //     this.nestedNodeMap.set(node, flatNode);
+  //     return flatNode;
+  //   };
+  //   flatNodeMap = new Map<FlatNode, TreeNode>();
+  //   nestedNodeMap = new Map<TreeNode, FlatNode>();
+  //   checklistSelection = new SelectionModel<FlatNode>(true);
+
+  //   treeControl = new FlatTreeControl<FlatNode>(
+  //     node => node.level,
+  //     node => node.expandable
+  //   );
+
+  //   treeFlattener = new NzTreeFlattener(
+  //     this.transformer,
+  //     node => node.level,
+  //     node => node.expandable,
+  //     node => node.children
+  //   );
+
+  //   dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
+
+  //   constructor() {
+  //     this.dataSource.setData(TREE_DATA);
+  //   }
+
+  //   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
+
+  //   descendantsAllSelected(node: FlatNode): boolean {
+  //     const descendants = this.treeControl.getDescendants(node);
+  //     return descendants.length > 0 && descendants.every(child => this.checklistSelection.isSelected(child));
+  //   }
+
+  //   descendantsPartiallySelected(node: FlatNode): boolean {
+  //     const descendants = this.treeControl.getDescendants(node);
+  //     const result = descendants.some(child => this.checklistSelection.isSelected(child));
+  //     return result && !this.descendantsAllSelected(node);
+  //   }
+
+  //   leafItemSelectionToggle(node: FlatNode): void {
+  //     this.checklistSelection.toggle(node);
+  //     this.checkAllParentsSelection(node);
+  //   }
+
+  //   itemSelectionToggle(node: FlatNode): void {
+  //     this.checklistSelection.toggle(node);
+  //     const descendants = this.treeControl.getDescendants(node);
+  //     this.checklistSelection.isSelected(node)
+  //       ? this.checklistSelection.select(...descendants)
+  //       : this.checklistSelection.deselect(...descendants);
+
+  //     descendants.forEach(child => this.checklistSelection.isSelected(child));
+  //     this.checkAllParentsSelection(node);
+  //   }
+
+  //   checkAllParentsSelection(node: FlatNode): void {
+  //     let parent: FlatNode | null = this.getParentNode(node);
+  //     while (parent) {
+  //       this.checkRootNodeSelection(parent);
+  //       parent = this.getParentNode(parent);
+  //     }
+  //   }
+
+  //   checkRootNodeSelection(node: FlatNode): void {
+  //     const nodeSelected = this.checklistSelection.isSelected(node);
+  //     const descendants = this.treeControl.getDescendants(node);
+  //     const descAllSelected =
+  //       descendants.length > 0 && descendants.every(child => this.checklistSelection.isSelected(child));
+  //     if (nodeSelected && !descAllSelected) {
+  //       this.checklistSelection.deselect(node);
+  //     } else if (!nodeSelected && descAllSelected) {
+  //       this.checklistSelection.select(node);
+  //     }
+  //   }
+
+  //   getParentNode(node: FlatNode): FlatNode | null {
+  //     const currentLevel = node.level;
+
+  //     if (currentLevel < 1) {
+  //       return null;
+  //     }
+
+  //     const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+
+  //     for (let i = startIndex; i >= 0; i--) {
+  //       const currentNode = this.treeControl.dataNodes[i];
+
+  //       if (currentNode.level < currentLevel) {
+  //         return currentNode;
+  //       }
+  //     }
+  //     return null;
+  //   }
+}
+
+//
+<!-- <nz-tree
+      [nzData]="nodes"
+      nzCheckable
+      nzMultiple
+      [nzCheckedKeys]="defaultCheckedKeys"
+      [nzExpandedKeys]="defaultExpandedKeys"
+      [nzSelectedKeys]="defaultSelectedKeys"
+      (nzClick)="nzEvent($event)"
+      (nzExpandChange)="nzEvent($event)"
+      (nzCheckBoxChange)="nzEvent($event)"
+    ></nz-tree> -->
+
+<!--
+<nz-tree-virtual-scroll-view class="virtual-scroll-tree" [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
+  <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+    {{ node.name }}
+  </nz-tree-node>
+
+  <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+    <nz-tree-node-toggle>
+      <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
+    </nz-tree-node-toggle>
+    {{ node.name }}
+  </nz-tree-node>
+</nz-tree-virtual-scroll-view> -->
+<!-- <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
+  <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+    <nz-tree-node-checkbox
+      [nzDisabled]="node.disabled"
+      [nzChecked]="checklistSelection.isSelected(node)"
+      (nzClick)="leafItemSelectionToggle(node)"
+    ></nz-tree-node-checkbox>
+    <nz-tree-node-option [nzDisabled]="node.disabled" (nzClick)="leafItemSelectionToggle(node)">
+      {{ node.name }}
+    </nz-tree-node-option>
+  </nz-tree-node>
+
+  <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+    <nz-tree-node-toggle>
+      <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
+    </nz-tree-node-toggle>
+    <nz-tree-node-checkbox
+      [nzDisabled]="node.disabled"
+      [nzChecked]="descendantsAllSelected(node)"
+      [nzIndeterminate]="descendantsPartiallySelected(node)"
+      (nzClick)="itemSelectionToggle(node)"
+    ></nz-tree-node-checkbox>
+    <nz-tree-node-option [nzDisabled]="node.disabled" (nzClick)="itemSelectionToggle(node)">
+      {{ node.name }}
+    </nz-tree-node-option>
+  </nz-tree-node>
+</nz-tree-view> -->
+
+<nz-tree
+  [nzData]="nodes_expand"
+  nzAsyncData
+  (nzExpandChange)="nzEvent($event)"
+  [nzTreeTemplate]="nzTreeTemplate"
+></nz-tree>
+<ng-template #nzTreeTemplate let-node let-origin="origin">
+  <span class="custom-node">
+    <span *ngIf="!node.isLeaf">
+      <nz-checkbox-wrapper style="width: 100%" (nzOnChange)="log($event, node)">
+        <label
+          nz-checkbox
+          nzValue="{{ node.key }}"
+          nzChecked="{{ node.origin.checked || false }}"
+        ></label>
+        <span style="margin-left: 8px">{{ node.title }}</span>
+      </nz-checkbox-wrapper>
+    </span>
+    <span *ngIf="node.isLeaf">
+      <span class="file-name">{{ node.title }}</span>
+    </span>
+  </span>
+</ng-template>
+
+
