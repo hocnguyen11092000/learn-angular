@@ -19,6 +19,10 @@ import { AboutComponent } from './components/about/about.component';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
 import { NgChartsModule } from 'ng2-charts';
+import { CustomerModule } from './modules/customer/customer.module';
+import { TreeComponent } from './components/tree/tree.component';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzTreeModule } from 'ng-zorro-antd/tree';
 
 registerLocaleData(en);
 
@@ -29,6 +33,7 @@ registerLocaleData(en);
     PostComponent,
     AboutComponent,
     ErrorMessageComponent,
+    TreeComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,6 +48,9 @@ registerLocaleData(en);
     NzInputModule,
     NzSelectModule,
     NgChartsModule,
+    CustomerModule,
+    NzCheckboxModule,
+    NzTreeModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent],

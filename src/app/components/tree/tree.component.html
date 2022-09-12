@@ -1,0 +1,24 @@
+<nz-tree
+  [nzData]="nodes_expand"
+  nzAsyncData
+  (nzExpandChange)="nzEvent($event)"
+  [nzTreeTemplate]="nzTreeTemplate"
+></nz-tree>
+<ng-template #nzTreeTemplate let-node let-origin="origin">
+  <span class="custom-node">
+    <span *ngIf="!node.isLeaf">
+      <nz-checkbox-wrapper style="width: 100%" (nzOnChange)="log()">
+        <label
+          nz-checkbox
+          nzValue="{{ node.key }}"
+          nzChecked="{{ node.origin.checked || false }}"
+          (change)="handleChange(node.key, node)"
+        ></label>
+        <span style="margin-left: 8px">{{ node.title }}</span>
+      </nz-checkbox-wrapper>
+    </span>
+    <span *ngIf="node.isLeaf">
+      <span class="file-name">{{ node.title }}</span>
+    </span>
+  </span>
+</ng-template>
