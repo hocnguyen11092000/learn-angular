@@ -1,0 +1,156 @@
+const treeList = [
+  {
+    id: "299cc85d-718d-4b53-ad71-e983d42bf8be",
+    created_at: "7/9/2022 04:36:05.711873",
+    updated_at: "7/9/2022 04:36:05.711873",
+    deleted_at: null,
+    created_by: "",
+    updated_by: "",
+    deleted_by: "",
+    code: "joy.portal-user",
+    module: "user",
+    title: "User service",
+    type: "MODULE",
+    custom_title: "",
+  },
+  {
+    id: "ca6beb9c-f7b4-47d8-9874-6ffe0a148ecc",
+    created_at: "7/9/2022 04:36:05.711873",
+    updated_at: "7/9/2022 04:36:05.711873",
+    deleted_at: null,
+    created_by: "",
+    updated_by: "",
+    deleted_by: "",
+    code: "joy.portal-user.member",
+    module: "user",
+    title: "Member",
+    type: "SUB_MODULE",
+    custom_title: "",
+  },
+  {
+    id: "d9d882f6-79e4-4788-83cf-c410d67e8c62",
+    created_at: "7/9/2022 04:36:05.711873",
+    updated_at: "7/9/2022 04:36:05.711873",
+    deleted_at: null,
+    created_by: "",
+    updated_by: "",
+    deleted_by: "",
+    code: "joy.portal-user.group",
+    module: "user",
+    title: "Group",
+    type: "SUB_MODULE",
+    custom_title: "",
+  },
+  {
+    id: "a99810f7-3264-48c2-b2ec-eef7eaf2df12",
+    created_at: "7/9/2022 04:36:05.711873",
+    updated_at: "7/9/2022 04:36:05.711873",
+    deleted_at: null,
+    created_by: "",
+    updated_by: "",
+    deleted_by: "",
+    code: "joy.portal-user.member.list",
+    module: "user",
+    title: "Member list",
+    type: "SCREEN",
+    custom_title: "",
+  },
+  {
+    id: "6c7609b5-bc08-4284-9344-fa72aaff8233",
+    created_at: "7/9/2022 04:36:05.711873",
+    updated_at: "7/9/2022 04:36:05.711873",
+    deleted_at: null,
+    created_by: "",
+    updated_by: "",
+    deleted_by: "",
+    code: "joy.portal-user.group.list",
+    module: "user",
+    title: "Group list",
+    type: "SCREEN",
+    custom_title: "",
+  },
+  {
+    id: "59d72e23-19cb-480d-9d7e-3625569a793a",
+    created_at: "7/9/2022 04:36:05.711873",
+    updated_at: "7/9/2022 04:36:05.711873",
+    deleted_at: null,
+    created_by: "",
+    updated_by: "",
+    deleted_by: "",
+    code: "joy.portal-user.group.detail",
+    module: "user",
+    title: "Group detail",
+    type: "SCREEN",
+    custom_title: "",
+  },
+];
+
+const findDiff = (str1, str2) => {
+  let diff = "";
+  str2.split("").forEach(function (val, i) {
+    if (val != str1.charAt(i)) {
+      diff += val;
+    }
+  });
+  return diff;
+};
+String.prototype.count = function (c) {
+  var result = 0,
+    i = 0;
+  for (i; i < this.length; i++) if (this[i] == c) result++;
+  return result;
+};
+
+const appendChild = (tree, treeModule) => {
+  let children = [];
+  let code;
+  treeModule.forEach((treeModuleItem) => {
+    tree.forEach((treeItem) => {
+      if (
+        treeItem.code.count(".") === treeModuleItem.code?.count(".") + 1 &&
+        treeItem.code.includes(treeModuleItem.code)
+      ) {
+        children.push(treeItem);
+
+        treeModuleItem["children"] = children;
+      }
+    });
+
+    if (children.length > 0) {
+      appendChild(tree, children);
+    }
+  });
+  console.log(treeModule);
+};
+
+const formatTree = (tree) => {
+  const treeModule = tree.filter((item) => item.type === "MODULE");
+  if (treeModule.length > 0) {
+    appendChild(tree, treeModule);
+  }
+};
+formatTree(treeList);
+
+// const root = tree.filter((item) => item.type === "MODULE");
+// let arr = ["MODULE", "SUB_MODULE", "SCREEN"];
+
+// for (i in root) {
+//   let code = root[i].code;
+//   console.log(code);
+//   root[i].children = tree.filter(
+//     (treeItem) => treeItem.code.split(code)[1].split(".").length === 2
+//   );
+// }
+// console.log(root);
+
+// treeList.forEach((tree) => {
+//   if (tree.type !== "MODULE") {
+//     let parent = treeList.find((treeItem) => {
+//       return treeItem.code.split(tree.code)[1]?.split(".").length === 2;
+//     });
+//     console.log(parent);
+//   }
+// });
+
+// root = treeList.filter((tree) => tree.type === "MODULE");
+// console.log(root);
