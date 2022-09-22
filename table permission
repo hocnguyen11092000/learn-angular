@@ -1,0 +1,125 @@
+ <div class="group-detail__permission">
+    <div nz-row>
+      <div nz-col nzLg="4" nzSm="24">
+        <ul
+          nz-menu
+          style="
+            box-shadow: 0 7px 25px rgba(0 0 0 /8%);
+            height: 300px;
+            padding: 12px;
+            margin-right: 24px;
+          "
+        >
+          <li
+            *ngFor="let tree of treeFormat"
+            nz-menu-item
+            (click)="onSelectModule(tree.code)"
+          >
+            {{ tree.title }}
+          </li>
+        </ul>
+      </div>
+      <div nz-col nzLg="20" nzSm="24">
+        <div class="seach-screen" style="margin: 16px 0; width: 400px">
+          <form nz-form (ngSubmit)="submitForm()" [formGroup]="validateForm">
+            <nz-input-group
+              nzSearch
+              nzSize="default"
+              [nzAddOnAfter]="suffixButton"
+            >
+              <input
+                name="search"
+                type="text"
+                nz-input
+                placeholder="input search text"
+              />
+            </nz-input-group>
+            <ng-template #suffixButton>
+              <button nz-button nzType="primary" nzSize="default" nzSearch>
+                Search
+              </button>
+            </ng-template>
+          </form>
+        </div>
+        <nz-table #basicTable>
+          <thead>
+            <tr>
+              <th>Menu</th>
+              <th>Screen</th>
+              <th>Action</th>
+              <th>
+                <label
+                  (nzCheckedChange)="handleCheckAllActions()"
+                  style="cursor: pointer !important"
+                  nz-checkbox
+                  [ngModel]="checkedAllActions"
+                >
+                </label>
+                All
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of menu">
+              <td>
+                <div *ngFor="let _ of data.countchildren; index as i">
+                  {{ i === 0 ? data.title : "" }}
+                </div>
+              </td>
+              <td>
+                <ng-container *ngIf="data.children">
+                  <ng-container *ngFor="let screen of data.children">
+                    <div
+                      *ngFor="let _ of screen.countchildren; first as f"
+                      style="margin: 20px 0"
+                      [style]="!f ? { opacity: 0 } : {}"
+                    >
+                      {{ screen.title }}
+                    </div>
+                    <ng-container *ngIf="screen.countchildren == 0">
+                      <div style="margin: 20px 0">
+                        {{ screen.title }}
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="data.children">
+                  <ng-container *ngFor="let screen of data.children">
+                    <ng-container *ngIf="screen.children">
+                      <div
+                        style="margin: 20px 0"
+                        *ngFor="let action of screen.children"
+                      >
+                        {{ action.title }}
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="screen.children.length == 0">
+                      <div style="opacity: 0">-</div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="data.children">
+                  <div *ngFor="let screen of data.children">
+                    <ng-container *ngIf="screen.children">
+                      <div *ngFor="let action of screen.children">
+                        <div style="margin: 20px 0">
+                          <label
+                            (nzCheckedChange)="handleCheckedChange(action.code)"
+                            [nzChecked]="action.checked"
+                            style="cursor: pointer !important"
+                            nz-checkbox
+                          >
+                          </label>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
