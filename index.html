@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>hello world</div>
+  </body>
+  <script>
+    window.onbeforeunload = function () {
+      return "Leaving this page will reset the wizard";
+    };
+    const convertTimeAgo = (value) => {
+      if (value === "less than a minute") {
+        return "JUST NOW"; //vừa xong
+      }
+
+      if (value && Number.parseInt(value.split(" ")[0])) {
+        switch (value.split(" ")[1]) {
+          case "minute":
+            return `${Number.parseInt(value.split(" ")[0])} MINUTE AGO`;
+          case "minutes":
+            return `${Number.parseInt(value.split(" ")[0])} MINUTES AGO`;
+          case "day":
+            return `${Number.parseInt(value.split(" ")[0])} DAY AGO`;
+          case "days":
+            return `${Number.parseInt(value.split(" ")[0])} DAYS AGO`;
+          case "month":
+            return `${Number.parseInt(value.split(" ")[0])} MONTH AGO`;
+          case "months":
+            return `${Number.parseInt(value.split(" ")[0])} MONTHS AGO`;
+          default:
+            return value;
+        }
+      } else if (
+        value.split(" ")[0] == "about" ||
+        value.split(" ")[0] == "over" ||
+        value.split(" ")[0] == "almost"
+      ) {
+        switch (value.split(" ")[2]) {
+          case "hour":
+            return `${Number.parseInt(value.split(" ")[1])} HOUR AGO`;
+          case "hours":
+            return `${Number.parseInt(value.split(" ")[1])} HOURS AGO`;
+          case "month":
+            return `${Number.parseInt(value.split(" ")[1])} MONTH AGO`;
+          case "months":
+            return `${Number.parseInt(value.split(" ")[1])} MONTHS AGO`;
+          case "year":
+            return `${Number.parseInt(value.split(" ")[1])} YEAR AGO`;
+          case "years":
+            return `${Number.parseInt(value.split(" ")[1])} YEARS AGO`;
+        }
+      }
+    };
+
+    console.log(convertTimeAgo("almost 2 years"));
+  </script>
+</html>
